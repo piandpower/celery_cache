@@ -1,4 +1,7 @@
-name: celery-cache
+name: cc
 dependencies:
     - python=2.7
-    - celery
+    - pip
+    - redis-py
+    - pip:
+        - celery

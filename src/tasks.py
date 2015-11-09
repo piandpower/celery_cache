@@ -1,9 +1,10 @@
-from celery import Celery
+from celery import Celery, shared_task
 
 
-app = Celery("tasks", broker="redis://localhost")
+app = Celery('tasks')
+app.config_from_object('celeryconfig')
 
 
-@app.task
+@shared_task
 def add(x, y):
     return x + y

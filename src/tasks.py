@@ -12,8 +12,9 @@ redis_client = redis.StrictRedis(host='localhost', port=6379, db=1)
 class CachedTask(Task):
     abstract = True
 
-    def on_success(self, retval, *args, **kwargs):
-        redis_client.set(self.redis_key(), retval)
+    def after_return(self, status, retval, *args, **kwargs):
+        redis_client.hset(self.redis_key(), "retval", retval)
+        redis_client.hset(self.redis_key(), "status", status)
 
     def redis_key(self):
         return str({
@@ -29,8 +30,8 @@ def cached_task(self, func, *args, **kwargs):
     self.func = func
     self.func_args = args
     self.func_kwargs = kwargs
-    cached_result = redis_client.get(self.redis_key())
+    cached_result = redis_client.exists(self.redis_key())
     if cached_result:
-        return cached_result
+        return redis_client.hget(self.redis_key(), "retval")
     else:
         return self.func(*args, **kwargs)

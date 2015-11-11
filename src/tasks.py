@@ -17,14 +17,16 @@ class CachedTask(Task):
         pass
 
 
-@shared_task(base=CachedTask)
-def cached_task(func, *args, **kwargs):
-    cached_result = client.get("%s %s %s" % (func.func_name, args, kwargs))
+@shared_task(bind=True, base=CachedTask)
+def cached_task(self, func, *args, **kwargs):
+    self.func = func
+    cached_result = client.get("%s %s %s" % (self.func.func_name, args, kwargs))
     if cached_result:
         return cached_result
     else:
-        return func(*args, **kwargs)
+        return self.func(*args, **kwargs)
 
 
 def add(a, b):
+    time.sleep(5)
     return a + b

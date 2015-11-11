@@ -12,8 +12,8 @@ redis_client = redis.StrictRedis(host='localhost', port=6379, db=1)
 class CachedTask(Task):
     abstract = True
 
-    def after_return(self, status, retval, *args, **kwargs):
-        pass
+    def on_success(self, retval, *args, **kwargs):
+        redis_client.set(self.redis_key(), retval)
 
     def redis_key(self):
         return str({

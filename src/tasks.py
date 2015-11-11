@@ -17,7 +17,7 @@ class CachedTask(Task):
 
     def redis_key(self):
         return str({
-            self.func.func_name:{
+            self.func.func_name: {
                 "args": self.func_args,
                 "kwargs": self.func_kwargs
             }
@@ -34,8 +34,3 @@ def cached_task(self, func, *args, **kwargs):
         return cached_result
     else:
         return self.func(*args, **kwargs)
-
-
-def add(a, b):
-    time.sleep(5)
-    return a + b
